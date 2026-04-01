@@ -36,12 +36,20 @@ import {
 } from "lucide-react";
 
 const ACCENT = "#D8B36A";
-const CTA_DARK = "#102A43";
+const CTA_DARK = "#143847";
+const PAGE_BG = "#06131D";
+const PANEL_DARK = "#102A38";
+const PANEL_SOFT = "#173B47";
+const PANEL_DEEP = "#0D2431";
 
-const OUTER_GRADIENT =
-  "bg-[linear-gradient(135deg,rgba(9,32,46,0.94)_0%,rgba(17,58,74,0.90)_35%,rgba(26,78,86,0.86)_68%,rgba(77,60,29,0.82)_100%)]";
-const INNER_GRADIENT =
-  "bg-[linear-gradient(135deg,rgba(7,18,28,0.96)_0%,rgba(13,37,52,0.90)_55%,rgba(47,39,23,0.84)_100%)]";
+const SURFACE_GRADIENT =
+  "bg-[linear-gradient(135deg,rgba(7,29,43,0.98)_0%,rgba(15,51,66,0.96)_34%,rgba(31,74,80,0.94)_72%,rgba(92,80,39,0.88)_100%)]";
+
+const SOFT_INNER_GRADIENT =
+  "bg-[linear-gradient(135deg,rgba(18,52,67,0.72)_0%,rgba(30,69,81,0.58)_50%,rgba(80,77,49,0.36)_100%)]";
+
+const PAGE_BACKGROUND =
+  "bg-[linear-gradient(135deg,#04111C_0%,#071B29_18%,#0C2736_38%,#143847_56%,#1F4A50_78%,#4E4A2E_100%)]";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -53,17 +61,19 @@ const fadeUp = {
 };
 
 const pulseGlow = {
-  opacity: [0.2, 0.45, 0.2],
-  scale: [1, 1.03, 1],
-  transition: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+  opacity: [0.18, 0.3, 0.18],
+  scale: [1, 1.025, 1],
+  transition: { duration: 7, repeat: Infinity, ease: "easeInOut" },
 };
 
 const containerClass =
   "relative z-10 mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-10 xl:px-14";
+
 const glass =
-  "border border-white/10 bg-white/10 md:backdrop-blur-xl backdrop-blur-sm shadow-[0_8px_22px_rgba(0,0,0,0.18)]";
-const softCard = `rounded-[2rem] ${glass}`;
-const gradientOuterCard = `rounded-[2rem] border border-white/10 ${OUTER_GRADIENT} md:backdrop-blur-xl backdrop-blur-sm shadow-[0_8px_22px_rgba(0,0,0,0.18)]`;
+  "border border-white/10 bg-white/[0.05] md:backdrop-blur-xl backdrop-blur-sm shadow-[0_10px_30px_rgba(0,0,0,0.18)]";
+
+const softCard = `rounded-[2rem] border border-white/10 ${SURFACE_GRADIENT} shadow-[0_12px_34px_rgba(0,0,0,0.18)]`;
+const outerFrame = `rounded-[2.2rem] border border-white/10 ${SURFACE_GRADIENT} shadow-[0_16px_40px_rgba(0,0,0,0.2)]`;
 
 const navItems = [
   { label: "关于我们", href: "#about" },
@@ -219,7 +229,7 @@ function sectionBadge(icon, text, textColor = "text-white") {
   const Icon = icon;
   return (
     <div
-      className={`inline-flex max-w-full items-center gap-3 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-xs font-semibold ${textColor} backdrop-blur-md shadow-[0_6px_18px_rgba(0,0,0,0.16)] sm:px-5 sm:py-3 sm:text-sm`}
+      className={`inline-flex max-w-full items-center gap-3 rounded-full border border-white/10 bg-white/[0.07] px-4 py-2.5 text-xs font-semibold ${textColor} backdrop-blur-md shadow-[0_8px_18px_rgba(0,0,0,0.14)] sm:px-5 sm:py-3 sm:text-sm`}
     >
       <Icon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: ACCENT }} />
       <span className="truncate">{text}</span>
@@ -230,7 +240,7 @@ function sectionBadge(icon, text, textColor = "text-white") {
 function LargeSectionBadge({ icon: Icon, text }) {
   return (
     <div
-      className="inline-flex max-w-full items-center gap-3 rounded-full border border-white/10 bg-white/10 px-5 py-3 text-base font-bold backdrop-blur-md shadow-[0_6px_18px_rgba(0,0,0,0.16)] sm:px-8 sm:py-4 sm:text-xl lg:text-2xl"
+      className="inline-flex max-w-full items-center gap-3 rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-base font-bold backdrop-blur-md shadow-[0_8px_18px_rgba(0,0,0,0.14)] sm:px-8 sm:py-4 sm:text-xl lg:text-2xl"
       style={{ color: ACCENT }}
     >
       <Icon className="h-5 w-5 shrink-0 sm:h-7 sm:w-7" style={{ color: ACCENT }} />
@@ -285,6 +295,91 @@ function formatTime(seconds) {
   const mins = Math.floor(seconds / 60);
   const secs = Math.floor(seconds % 60);
   return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+}
+
+function CardShell({ children, className = "" }) {
+  return (
+    <div className={`${softCard} h-full p-[1px] ${className}`}>
+      <div className="h-full rounded-[1.95rem] border border-white/10 bg-[rgba(9,29,40,0.28)] p-3 sm:p-4">
+        <div className={`h-full rounded-[1.55rem] border border-white/10 ${SOFT_INNER_GRADIENT} p-4 sm:p-5`}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StructuredCard({ icon: Icon, title, desc, isMobile }) {
+  return (
+    <motion.div whileHover={isMobile ? {} : { y: -6, scale: 1.01 }} className="h-full">
+      <CardShell>
+        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06]">
+            <Icon className="h-5 w-5" style={{ color: ACCENT }} />
+          </div>
+          <h3 className="text-base font-bold leading-7 text-white sm:text-lg lg:text-xl">
+            {title}
+          </h3>
+        </div>
+
+        <div className="mt-4 rounded-2xl border border-white/10 bg-[rgba(7,23,34,0.34)] px-4 py-4 text-sm leading-7 text-white/80 sm:text-base sm:leading-8">
+          {desc}
+        </div>
+      </CardShell>
+    </motion.div>
+  );
+}
+
+function IdentityCard({ icon: Icon, title, text, large = false, isMobile }) {
+  return (
+    <motion.div whileHover={isMobile ? {} : { y: -6, scale: 1.01 }} className="h-full">
+      <CardShell>
+        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06]">
+            <Icon className="h-5 w-5" style={{ color: ACCENT }} />
+          </div>
+          <div
+            className={`rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-2 font-bold text-white ${
+              large ? "text-lg sm:text-xl" : "text-base sm:text-lg"
+            }`}
+          >
+            {title}
+          </div>
+        </div>
+
+        <div
+          className={`mt-4 rounded-2xl border border-white/10 bg-[rgba(7,23,34,0.34)] px-4 py-4 text-white/82 ${
+            large
+              ? "text-base leading-8 sm:text-lg sm:leading-9 lg:text-xl lg:leading-10"
+              : "text-base leading-8 sm:text-lg"
+          }`}
+        >
+          {text}
+        </div>
+      </CardShell>
+    </motion.div>
+  );
+}
+
+function ImpactCard({ icon: Icon, title, desc, isMobile }) {
+  return (
+    <motion.div whileHover={isMobile ? {} : { y: -6, scale: 1.01 }} className="h-full">
+      <CardShell>
+        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06]">
+            <Icon className="h-5 w-5" style={{ color: ACCENT }} />
+          </div>
+          <h3 className="text-base font-bold text-white sm:text-lg lg:text-xl">
+            {title}
+          </h3>
+        </div>
+
+        <div className="mt-4 rounded-2xl border border-white/10 bg-[rgba(7,23,34,0.34)] px-4 py-4 text-sm leading-7 text-white/80 sm:text-base sm:leading-8">
+          {desc}
+        </div>
+      </CardShell>
+    </motion.div>
+  );
 }
 
 function HeroAudioPlayer({ isMobile }) {
@@ -434,8 +529,7 @@ function HeroAudioPlayer({ isMobile }) {
         const localEnergy = count ? localSum / count / 255 : 0;
         const mixedEnergy = localEnergy * 0.68 + globalEnergy * 0.32;
         const height =
-          MIN_BAR_HEIGHT +
-          mixedEnergy * (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT);
+          MIN_BAR_HEIGHT + mixedEnergy * (MAX_BAR_HEIGHT - MIN_BAR_HEIGHT);
 
         return clamp(height, MIN_BAR_HEIGHT, MAX_BAR_HEIGHT);
       });
@@ -464,13 +558,8 @@ function HeroAudioPlayer({ isMobile }) {
 
   useEffect(() => {
     return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (
-        audioContextRef.current &&
-        audioContextRef.current.state !== "closed"
-      ) {
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      if (audioContextRef.current && audioContextRef.current.state !== "closed") {
         audioContextRef.current.close().catch(() => {});
       }
     };
@@ -523,10 +612,7 @@ function HeroAudioPlayer({ isMobile }) {
   const seekBy = (delta) => {
     const el = audioRef.current;
     if (!el) return;
-    el.currentTime = Math.max(
-      0,
-      Math.min(el.duration || 0, (el.currentTime || 0) + delta)
-    );
+    el.currentTime = Math.max(0, Math.min(el.duration || 0, (el.currentTime || 0) + delta));
   };
 
   const replay = async () => {
@@ -553,12 +639,8 @@ function HeroAudioPlayer({ isMobile }) {
   };
 
   return (
-    <div className="mt-5 rounded-[1.35rem] border border-white/10 bg-[#08131b]/60 p-3 sm:p-4">
-      <audio
-        ref={audioRef}
-        preload="metadata"
-        onContextMenu={(e) => e.preventDefault()}
-      />
+    <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-[rgba(7,23,34,0.34)] p-3 sm:p-4">
+      <audio ref={audioRef} preload="metadata" onContextMenu={(e) => e.preventDefault()} />
 
       <div className="mb-4 flex h-14 items-end gap-[2px] overflow-hidden rounded-2xl border border-white/10 bg-black/10 px-2 py-3 sm:h-18">
         {bars.map((height, index) => (
@@ -566,7 +648,7 @@ function HeroAudioPlayer({ isMobile }) {
             key={index}
             animate={{ height }}
             transition={{ duration: isMobile ? 0.2 : 0.14, ease: "easeOut" }}
-            className="flex-1 self-end rounded-full bg-gradient-to-t from-[#1D5C63] via-[#D8B36A] to-[#8BC6C0] opacity-95"
+            className="flex-1 self-end rounded-full bg-gradient-to-t from-[#1C5763] via-[#D8B36A] to-[#8EA08A] opacity-95"
             style={{ maxHeight: `${MAX_BAR_HEIGHT}px` }}
           />
         ))}
@@ -576,7 +658,7 @@ function HeroAudioPlayer({ isMobile }) {
         <button
           type="button"
           onClick={togglePlay}
-          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white transition hover:bg-white/[0.10]"
           aria-label={isPlaying ? "暂停" : "播放"}
         >
           {isPlaying ? (
@@ -589,7 +671,7 @@ function HeroAudioPlayer({ isMobile }) {
         <button
           type="button"
           onClick={() => seekBy(-10)}
-          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white transition hover:bg-white/[0.10]"
           aria-label="后退"
         >
           <SkipBack className="h-4 w-4" style={{ color: ACCENT }} />
@@ -598,7 +680,7 @@ function HeroAudioPlayer({ isMobile }) {
         <button
           type="button"
           onClick={replay}
-          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white transition hover:bg-white/[0.10]"
           aria-label="重新播放"
         >
           <RotateCcw className="h-4 w-4" style={{ color: ACCENT }} />
@@ -607,7 +689,7 @@ function HeroAudioPlayer({ isMobile }) {
         <button
           type="button"
           onClick={() => seekBy(10)}
-          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white transition hover:bg-white/[0.10]"
           aria-label="前进"
         >
           <SkipForward className="h-4 w-4" style={{ color: ACCENT }} />
@@ -616,7 +698,7 @@ function HeroAudioPlayer({ isMobile }) {
         <button
           type="button"
           onClick={toggleMute}
-          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
+          className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white transition hover:bg-white/[0.10]"
           aria-label="音量"
         >
           <Volume2
@@ -625,13 +707,11 @@ function HeroAudioPlayer({ isMobile }) {
           />
         </button>
 
-        <div className="min-w-[52px] text-xs text-white/75">
-          {formatTime(currentTime)}
-        </div>
+        <div className="min-w-[52px] text-xs text-white/75">{formatTime(currentTime)}</div>
 
         <div className="relative h-2 w-full flex-1 overflow-visible rounded-full bg-white/10">
           <div
-            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#1D5C63] via-[#D8B36A] to-[#8BC6C0]"
+            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#1C5763] via-[#D8B36A] to-[#8EA08A]"
             style={{ width: `${progress}%` }}
           />
           <input
@@ -670,85 +750,6 @@ function HeroAudioPlayer({ isMobile }) {
         }
       `}</style>
     </div>
-  );
-}
-
-function StructuredCard({ icon: Icon, title, desc, isMobile }) {
-  return (
-    <motion.div
-      whileHover={isMobile ? {} : { y: -6, scale: 1.01 }}
-      className={`${gradientOuterCard} h-full p-4 sm:p-5`}
-    >
-      <div className="h-full rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/5 to-white/10 px-4 py-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-[#7FB7AD]/10">
-            <Icon className="h-5 w-5" style={{ color: ACCENT }} />
-          </div>
-          <h3 className="text-base font-bold leading-7 text-white sm:text-lg lg:text-xl">
-            {title}
-          </h3>
-        </div>
-        <div className="mt-4 rounded-2xl border border-white/10 bg-[#08131b]/60 px-4 py-4 text-sm leading-7 text-white/78 sm:text-base sm:leading-8">
-          {desc}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function IdentityCard({ icon: Icon, title, text, large = false, isMobile }) {
-  return (
-    <motion.div
-      whileHover={isMobile ? {} : { y: -6, scale: 1.01 }}
-      className={`${softCard} h-full p-4 sm:p-5`}
-    >
-      <div className="h-full rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/5 to-white/10 px-4 py-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-[#7FB7AD]/10">
-            <Icon className="h-5 w-5" style={{ color: ACCENT }} />
-          </div>
-          <div
-            className={`rounded-2xl border border-white/10 bg-white/5 px-4 py-2 font-bold text-white ${
-              large ? "text-lg sm:text-xl" : "text-base sm:text-lg"
-            }`}
-          >
-            {title}
-          </div>
-        </div>
-        <div
-          className={`mt-4 rounded-2xl border border-white/10 bg-[#08131b]/60 px-4 py-4 text-white/80 ${
-            large
-              ? "text-base leading-8 sm:text-lg sm:leading-9 lg:text-xl lg:leading-10"
-              : "text-base leading-8 sm:text-lg"
-          }`}
-        >
-          {text}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-function ImpactCard({ icon: Icon, title, desc, isMobile }) {
-  return (
-    <motion.div
-      whileHover={isMobile ? {} : { y: -6, scale: 1.01 }}
-      className={`${softCard} h-full p-4 sm:p-5`}
-    >
-      <div className="h-full rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-gradient-to-r from-white/5 to-white/10 px-4 py-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-[#D8B36A]/10">
-            <Icon className="h-5 w-5" style={{ color: ACCENT }} />
-          </div>
-          <h3 className="text-base font-bold text-white sm:text-lg lg:text-xl">
-            {title}
-          </h3>
-        </div>
-        <div className="mt-4 rounded-2xl border border-white/10 bg-[#08131b]/60 px-4 py-4 text-sm leading-7 text-white/78 sm:text-base sm:leading-8">
-          {desc}
-        </div>
-      </div>
-    </motion.div>
   );
 }
 
@@ -824,7 +825,6 @@ function ProtectedHlsVideoCard({
   const playVideo = () => {
     const el = videoRef.current;
     if (!el) return;
-
     requestExclusivePlay(videoId);
     el.play().catch(() => {});
   };
@@ -832,7 +832,6 @@ function ProtectedHlsVideoCard({
   const togglePlay = () => {
     const el = videoRef.current;
     if (!el) return;
-
     if (el.paused) {
       playVideo();
     } else {
@@ -843,7 +842,6 @@ function ProtectedHlsVideoCard({
   const replayVideo = () => {
     const el = videoRef.current;
     if (!el) return;
-
     requestExclusivePlay(videoId);
     el.currentTime = 0;
     el.play().catch(() => {});
@@ -872,118 +870,118 @@ function ProtectedHlsVideoCard({
       viewport={{ once: true, amount: 0.18 }}
       transition={{ duration: 0.5, delay: isMobile ? 0 : index * 0.08 }}
       whileHover={isMobile ? {} : { y: -6, scale: 1.01 }}
-      className={`${softCard} p-3 sm:p-4`}
+      className="h-full"
     >
-      <div className="relative overflow-hidden rounded-[1.4rem] border border-white/10 bg-black/30">
-        <video
-          ref={videoRef}
-          src={video}
-          className="aspect-video w-full object-cover"
-          playsInline
-          preload="auto"
-          controls={false}
-          muted={muted}
-          onContextMenu={(e) => e.preventDefault()}
-        />
+      <CardShell className="p-[1px]">
+        <div className="relative overflow-hidden rounded-[1.4rem] border border-white/10 bg-black/30">
+          <video
+            ref={videoRef}
+            src={video}
+            className="aspect-video w-full object-cover"
+            playsInline
+            preload="auto"
+            controls={false}
+            muted={muted}
+            onContextMenu={(e) => e.preventDefault()}
+          />
 
-        {!isPlaying && (
-          <button
-            type="button"
-            onClick={togglePlay}
-            className="absolute inset-0 flex items-center justify-center bg-black/15 transition hover:bg-black/10"
-            aria-label="播放视频"
-          >
-            <span className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-md shadow-[0_0_22px_rgba(29,92,99,0.22)] sm:h-18 sm:w-18">
-              <Play className="ml-1 h-7 w-7 text-white" />
-            </span>
-          </button>
-        )}
+          {!isPlaying && (
+            <button
+              type="button"
+              onClick={togglePlay}
+              className="absolute inset-0 flex items-center justify-center bg-black/15 transition hover:bg-black/10"
+              aria-label="播放视频"
+            >
+              <span className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 backdrop-blur-md shadow-[0_0_22px_rgba(20,56,71,0.25)] sm:h-18 sm:w-18">
+                <Play className="ml-1 h-7 w-7 text-white" />
+              </span>
+            </button>
+          )}
 
-        <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/10 bg-black/35 px-3 py-1 text-[11px] text-white/80 backdrop-blur-md">
-          {isReady ? "播放前预览已就绪" : "正在准备预览"}
-        </div>
-      </div>
-
-      <div className="mt-4 rounded-[1.3rem] border border-white/10 bg-[#08131b]/60 p-3 sm:p-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={toggleMute}
-            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
-            aria-label="静音或开启声音"
-          >
-            <Volume2
-              className={`h-4 w-4 ${muted ? "opacity-50" : ""}`}
-              style={{ color: ACCENT }}
-            />
-          </button>
-
-          <button
-            type="button"
-            onClick={replayVideo}
-            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
-            aria-label="重新播放"
-          >
-            <RotateCcw className="h-4 w-4" style={{ color: ACCENT }} />
-          </button>
-
-          <button
-            type="button"
-            onClick={togglePlay}
-            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10"
-            aria-label={isPlaying ? "暂停" : "播放"}
-          >
-            {isPlaying ? (
-              <Pause className="h-4 w-4" style={{ color: ACCENT }} />
-            ) : (
-              <Play className="h-4 w-4" style={{ color: ACCENT }} />
-            )}
-          </button>
-
-          <div className="min-w-[52px] text-xs text-white/75">
-            {formatTime(currentTime)}
-          </div>
-
-          <div className="relative h-2 w-full flex-1 overflow-visible rounded-full bg-white/10">
-            <div
-              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#1D5C63] via-[#D8B36A] to-[#8BC6C0]"
-              style={{ width: `${progress}%` }}
-            />
-            <input
-              type="range"
-              min="0"
-              max={duration || 0}
-              step="0.1"
-              value={currentTime}
-              onChange={handleSeek}
-              className="video-range absolute inset-0 z-10 h-full w-full cursor-pointer appearance-none bg-transparent"
-            />
+          <div className="pointer-events-none absolute left-3 top-3 rounded-full border border-white/10 bg-black/35 px-3 py-1 text-[11px] text-white/80 backdrop-blur-md">
+            {isReady ? "播放前预览已就绪" : "正在准备预览"}
           </div>
         </div>
-      </div>
 
-      <style>{`
-        .video-range::-webkit-slider-runnable-track { height: 8px; background: transparent; }
-        .video-range::-moz-range-track { height: 8px; background: transparent; }
-        .video-range::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          width: 14px;
-          height: 14px;
-          margin-top: -3px;
-          border-radius: 999px;
-          border: 2px solid rgba(255,255,255,0.9);
-          background: ${ACCENT};
-          box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
-        }
-        .video-range::-moz-range-thumb {
-          width: 14px;
-          height: 14px;
-          border: 2px solid rgba(255,255,255,0.9);
-          border-radius: 999px;
-          background: ${ACCENT};
-          box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
-        }
-      `}</style>
+        <div className="mt-4 rounded-[1.3rem] border border-white/10 bg-[rgba(7,23,34,0.34)] p-3 sm:p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleMute}
+              className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white transition hover:bg-white/[0.10]"
+              aria-label="静音或开启声音"
+            >
+              <Volume2
+                className={`h-4 w-4 ${muted ? "opacity-50" : ""}`}
+                style={{ color: ACCENT }}
+              />
+            </button>
+
+            <button
+              type="button"
+              onClick={replayVideo}
+              className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white transition hover:bg-white/[0.10]"
+              aria-label="重新播放"
+            >
+              <RotateCcw className="h-4 w-4" style={{ color: ACCENT }} />
+            </button>
+
+            <button
+              type="button"
+              onClick={togglePlay}
+              className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white transition hover:bg-white/[0.10]"
+              aria-label={isPlaying ? "暂停" : "播放"}
+            >
+              {isPlaying ? (
+                <Pause className="h-4 w-4" style={{ color: ACCENT }} />
+              ) : (
+                <Play className="h-4 w-4" style={{ color: ACCENT }} />
+              )}
+            </button>
+
+            <div className="min-w-[52px] text-xs text-white/75">{formatTime(currentTime)}</div>
+
+            <div className="relative h-2 w-full flex-1 overflow-visible rounded-full bg-white/10">
+              <div
+                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#1C5763] via-[#D8B36A] to-[#8EA08A]"
+                style={{ width: `${progress}%` }}
+              />
+              <input
+                type="range"
+                min="0"
+                max={duration || 0}
+                step="0.1"
+                value={currentTime}
+                onChange={handleSeek}
+                className="video-range absolute inset-0 z-10 h-full w-full cursor-pointer appearance-none bg-transparent"
+              />
+            </div>
+          </div>
+        </div>
+
+        <style>{`
+          .video-range::-webkit-slider-runnable-track { height: 8px; background: transparent; }
+          .video-range::-moz-range-track { height: 8px; background: transparent; }
+          .video-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            margin-top: -3px;
+            border-radius: 999px;
+            border: 2px solid rgba(255,255,255,0.9);
+            background: ${ACCENT};
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
+          }
+          .video-range::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.9);
+            border-radius: 999px;
+            background: ${ACCENT};
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
+          }
+        `}</style>
+      </CardShell>
     </motion.div>
   );
 }
@@ -1011,21 +1009,22 @@ export default function QuranTranslationLandingPage() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <div
-        dir="ltr"
-        className="relative min-h-screen overflow-hidden bg-transparent text-white"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(127,183,173,0.16),transparent_30%),radial-gradient(circle_at_80%_20%,rgba(216,179,106,0.16),transparent_22%),radial-gradient(circle_at_20%_80%,rgba(29,92,99,0.16),transparent_24%),linear-gradient(180deg,#030711_0%,#071523_36%,#0A2332_72%,#15120F_100%)]" />
+      <div dir="ltr" className={`relative min-h-screen overflow-hidden text-white ${PAGE_BACKGROUND}`}>
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.10)_0%,rgba(0,0,0,0.16)_100%)]" />
+        <div className="absolute inset-0 opacity-[0.07]">
+          <div className="h-full w-full bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:44px_44px]" />
+        </div>
 
         {!isMobile && (
           <>
             <motion.div
-              className="absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-[#1D5C63]/18 blur-3xl"
+              className="absolute left-[18%] top-[12%] h-[26rem] w-[26rem] rounded-full bg-[#1F4A50]/18 blur-3xl"
               animate={pulseGlow}
             />
-            <div className="absolute inset-0 opacity-[0.06]">
-              <div className="h-full w-full bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:44px_44px]" />
-            </div>
+            <motion.div
+              className="absolute bottom-[8%] right-[10%] h-[24rem] w-[24rem] rounded-full bg-[#4E4A2E]/18 blur-3xl"
+              animate={pulseGlow}
+            />
           </>
         )}
 
@@ -1035,10 +1034,10 @@ export default function QuranTranslationLandingPage() {
               initial="hidden"
               animate="show"
               variants={fadeUp}
-              className={`mx-auto flex items-center justify-between gap-3 rounded-[1.5rem] px-3 py-3 sm:rounded-[2rem] sm:px-4 ${glass}`}
+              className={`mx-auto flex items-center justify-between gap-3 rounded-[1.8rem] px-3 py-3 sm:rounded-[2rem] sm:px-4 ${outerFrame}`}
             >
               <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#D8B36A]/20 bg-white/10 shadow-[0_0_16px_rgba(29,92,99,0.20)] sm:h-16 sm:w-16">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/10 shadow-[0_0_16px_rgba(20,56,71,0.2)] sm:h-16 sm:w-16">
                   <img
                     src={sanaLogo}
                     alt="Sana Quran Channels 标志"
@@ -1057,7 +1056,7 @@ export default function QuranTranslationLandingPage() {
                   <a
                     key={item.href}
                     href={item.href}
-                    className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 transition hover:border-[#8BC6C0]/40 hover:bg-white/10 hover:text-[#D8E7E2]"
+                    className="rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-sm font-medium text-white/85 transition hover:border-white/20 hover:bg-white/[0.10] hover:text-white"
                   >
                     {item.label}
                   </a>
@@ -1067,21 +1066,21 @@ export default function QuranTranslationLandingPage() {
               <button
                 type="button"
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/5 md:hidden"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] md:hidden"
               >
                 <Menu className="h-5 w-5" />
               </button>
             </motion.div>
 
             {menuOpen && (
-              <div className={`mt-3 rounded-[1.4rem] p-3 md:hidden sm:rounded-[1.6rem] sm:p-4 ${glass}`}>
+              <div className={`mt-3 rounded-[1.6rem] p-3 md:hidden ${softCard}`}>
                 <div className="grid gap-2">
                   {navItems.map((item) => (
                     <a
                       key={item.href}
                       href={item.href}
                       onClick={() => setMenuOpen(false)}
-                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/85 sm:text-base"
+                      className="rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white/85 sm:text-base"
                     >
                       {item.label}
                     </a>
@@ -1092,13 +1091,13 @@ export default function QuranTranslationLandingPage() {
           </header>
 
           <section className="relative grid min-h-[auto] items-center gap-10 py-10 sm:gap-12 sm:py-14 lg:min-h-[84vh] lg:grid-cols-[1.05fr_0.95fr] lg:py-20">
-            <div className="order-1 lg:order-1">
+            <div className="order-1">
               <motion.div
                 custom={0}
                 initial="hidden"
                 animate="show"
                 variants={fadeUp}
-                className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#D8B36A]/20 bg-white/10 px-4 py-2 text-xs backdrop-blur-md sm:text-sm"
+                className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs backdrop-blur-md sm:text-sm"
                 style={{ color: ACCENT }}
               >
                 <Stars className="h-4 w-4" style={{ color: ACCENT }} />
@@ -1112,7 +1111,7 @@ export default function QuranTranslationLandingPage() {
                 variants={fadeUp}
                 className="text-3xl font-black leading-[1.25] sm:text-5xl lg:text-7xl"
               >
-                <span className="block bg-gradient-to-r from-[#D8B36A] via-[#DCE8E2] to-[#8BC6C0] bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-[#F2E6C4] via-[#D8B36A] to-[#DCE4DD] bg-clip-text text-transparent">
                   Sana 古兰经频道
                 </span>
               </motion.h1>
@@ -1154,7 +1153,7 @@ export default function QuranTranslationLandingPage() {
                   href="https://youtube.com/@san-ar-m5i?si=RpejWa62nYgs2LGQ"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/15 sm:px-7 sm:py-4 sm:text-base"
+                  className="inline-flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/[0.06] px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/[0.10] sm:px-7 sm:py-4 sm:text-base"
                 >
                   <Play className="h-5 w-5" />
                   访问我们的频道
@@ -1175,18 +1174,16 @@ export default function QuranTranslationLandingPage() {
                     transition={
                       isMobile
                         ? {}
-                        : {
-                            duration: 4 + i,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                          }
+                        : { duration: 4 + i, repeat: Infinity, ease: "easeInOut" }
                     }
-                    className="rounded-3xl border border-white/10 bg-white/10 p-3 text-center backdrop-blur-md shadow-[0_6px_16px_rgba(0,0,0,0.12)] sm:p-4"
+                    className={`${softCard} p-[1px]`}
                   >
-                    <div className="text-xl font-black sm:text-2xl" style={{ color: ACCENT }}>
-                      {item.value}
+                    <div className="rounded-[1.6rem] border border-white/10 bg-[rgba(9,29,40,0.28)] p-4 text-center">
+                      <div className="text-xl font-black sm:text-2xl" style={{ color: ACCENT }}>
+                        {item.value}
+                      </div>
+                      <div className="mt-2 text-xs text-white/72 sm:text-sm">{item.label}</div>
                     </div>
-                    <div className="mt-2 text-xs text-white/70 sm:text-sm">{item.label}</div>
                   </motion.div>
                 ))}
               </motion.div>
@@ -1196,66 +1193,66 @@ export default function QuranTranslationLandingPage() {
               initial={{ opacity: 0, scale: 0.96, rotate: isMobile ? 0 : -2 }}
               animate={{ opacity: 1, scale: 1, rotate: 0 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="order-2 relative lg:order-2"
+              className="order-2 relative"
             >
               <motion.div
                 animate={isMobile ? {} : { y: [0, -10, 0] }}
                 transition={isMobile ? {} : { duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                className={`relative mx-auto max-w-2xl p-3 sm:p-4 ${softCard}`}
+                className={`relative mx-auto max-w-2xl ${outerFrame} p-[1px]`}
               >
-                <div className="rounded-[1.6rem] border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-4 sm:p-6">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-xs text-white/60 sm:text-sm">当前语言</p>
-                      <h3 className="mt-1 text-xl font-bold sm:text-2xl">
-                        阿拉伯语古兰经
-                      </h3>
-                    </div>
-                    <div className="w-fit rounded-2xl border border-[#8BC6C0]/20 bg-[#7FB7AD]/15 px-4 py-2 text-xs text-[#DCE8E2] sm:text-sm">
-                      实时播出
-                    </div>
-                  </div>
-
-                  <div className="mt-6 rounded-[1.4rem] border border-white/10 bg-[#0b1a23]/72 p-4 sm:mt-8 sm:p-6">
-                    <div className="mb-4 flex items-start gap-3 text-sm text-white/80 sm:items-center sm:text-base">
-                      <Headphones className="mt-0.5 h-5 w-5 shrink-0 text-[#8BC6C0] sm:mt-0" />
-                      <span>聆听诵读，同时观看古兰经意义的视觉呈现</span>
+                <div className="rounded-[2.1rem] border border-white/10 bg-[rgba(9,29,40,0.28)] p-3 sm:p-4">
+                  <div className={`rounded-[1.8rem] border border-white/10 ${SOFT_INNER_GRADIENT} p-4 sm:p-6`}>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p className="text-xs text-white/60 sm:text-sm">当前语言</p>
+                        <h3 className="mt-1 text-xl font-bold sm:text-2xl">阿拉伯语古兰经</h3>
+                      </div>
+                      <div className="w-fit rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-2 text-xs text-[#E3E7E3] sm:text-sm">
+                        实时播出
+                      </div>
                     </div>
 
-                    {!isMobile && (
-                      <div className="space-y-3">
-                        {[65, 88, 42].map((w, idx) => (
-                          <motion.div
-                            key={idx}
-                            animate={{ width: [`${w - 14}%`, `${w}%`, `${w - 8}%`] }}
-                            transition={{
-                              duration: 3 + idx,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                            }}
-                            className="h-3 rounded-full bg-gradient-to-r from-[#1D5C63] via-[#D8B36A] to-[#8BC6C0]"
-                          />
+                    <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-[rgba(7,23,34,0.30)] p-4 sm:mt-8 sm:p-6">
+                      <div className="mb-4 flex items-start gap-3 text-sm text-white/80 sm:items-center sm:text-base">
+                        <Headphones className="mt-0.5 h-5 w-5 shrink-0" style={{ color: ACCENT }} />
+                        <span>聆听诵读，同时观看古兰经意义的视觉呈现</span>
+                      </div>
+
+                      {!isMobile && (
+                        <div className="space-y-3">
+                          {[65, 88, 42].map((w, idx) => (
+                            <motion.div
+                              key={idx}
+                              animate={{ width: [`${w - 14}%`, `${w}%`, `${w - 8}%`] }}
+                              transition={{
+                                duration: 3 + idx,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                              }}
+                              className="h-3 rounded-full bg-gradient-to-r from-[#1C5763] via-[#D8B36A] to-[#8EA08A]"
+                            />
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="mt-6 grid grid-cols-3 gap-2 text-center sm:mt-8 sm:gap-3">
+                        {heroCards.map((item) => (
+                          <div
+                            key={item.label}
+                            className="rounded-2xl border border-white/10 bg-white/[0.05] p-3 sm:p-4"
+                          >
+                            <div className="text-sm font-bold sm:text-lg" style={{ color: ACCENT }}>
+                              {item.value}
+                            </div>
+                            <div className="mt-1 text-[11px] text-white/60 sm:text-xs">
+                              {item.label}
+                            </div>
+                          </div>
                         ))}
                       </div>
-                    )}
 
-                    <div className="mt-6 grid grid-cols-3 gap-2 text-center sm:mt-8 sm:gap-3">
-                      {heroCards.map((item) => (
-                        <div
-                          key={item.label}
-                          className="rounded-2xl border border-white/10 bg-white/5 p-3 sm:p-4"
-                        >
-                          <div className="text-sm font-bold sm:text-lg" style={{ color: ACCENT }}>
-                            {item.value}
-                          </div>
-                          <div className="mt-1 text-[11px] text-white/60 sm:text-xs">
-                            {item.label}
-                          </div>
-                        </div>
-                      ))}
+                      <HeroAudioPlayer isMobile={isMobile} />
                     </div>
-
-                    <HeroAudioPlayer isMobile={isMobile} />
                   </div>
                 </div>
               </motion.div>
@@ -1264,15 +1261,14 @@ export default function QuranTranslationLandingPage() {
                 {heroBadges.map((item) => {
                   const Icon = item.icon;
                   return (
-                    <div
-                      key={item.title}
-                      className="w-full rounded-[1.4rem] border border-white/10 bg-white/10 px-5 py-4 text-center backdrop-blur-md shadow-[0_6px_16px_rgba(0,0,0,0.12)] sm:min-w-[220px] sm:w-auto sm:rounded-[1.6rem]"
-                    >
-                      <div className="flex items-center justify-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 sm:h-11 sm:w-11">
-                          <Icon className="h-5 w-5" style={{ color: ACCENT }} />
+                    <div key={item.title} className={`${softCard} w-full p-[1px] sm:min-w-[220px] sm:w-auto`}>
+                      <div className="rounded-[1.5rem] border border-white/10 bg-[rgba(9,29,40,0.28)] px-5 py-4 text-center">
+                        <div className="flex items-center justify-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] sm:h-11 sm:w-11">
+                            <Icon className="h-5 w-5" style={{ color: ACCENT }} />
+                          </div>
+                          <div className="text-sm font-bold text-white sm:text-base">{item.title}</div>
                         </div>
-                        <div className="text-sm font-bold text-white sm:text-base">{item.title}</div>
                       </div>
                     </div>
                   );
@@ -1330,43 +1326,43 @@ export default function QuranTranslationLandingPage() {
               whileInView="show"
               viewport={{ once: true, amount: 0.2 }}
               variants={fadeUp}
-              className={`relative overflow-hidden p-5 sm:p-6 md:p-10 ${gradientOuterCard}`}
+              className={`relative overflow-hidden p-5 sm:p-6 md:p-10 ${outerFrame}`}
             >
-              {!isMobile && (
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(127,183,173,0.12),transparent_28%),radial-gradient(circle_at_80%_80%,rgba(216,179,106,0.10),transparent_32%)]" />
-              )}
-
               <div className="relative z-10">
                 <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch lg:gap-8">
-                  <div className="rounded-[1.8rem] border border-white/10 bg-[#08131b]/48 p-4 sm:p-6">
-                    <div className="h-full rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5">
-                      <h2 className="text-2xl font-black sm:text-3xl lg:text-4xl">
-                        值得信赖的执行合作
-                      </h2>
-                      <p className="mt-5 text-base leading-8 text-white/75 sm:text-lg">
-                        <span className="font-bold text-white">Sana 古兰经频道</span>
-                        项目由
-                        <span className="font-bold" style={{ color: ACCENT }}>
-                          沙特-约旦卫星广播公司（Jasco）
-                        </span>
-                        在约旦安曼负责执行，拥有媒体制作与播出的丰富经验。
-                      </p>
+                  <div className={`${softCard} p-[1px]`}>
+                    <div className="h-full rounded-[1.8rem] border border-white/10 bg-[rgba(9,29,40,0.28)] p-4 sm:p-6">
+                      <div className={`h-full rounded-2xl border border-white/10 ${SOFT_INNER_GRADIENT} p-4 sm:p-5`}>
+                        <h2 className="text-2xl font-black sm:text-3xl lg:text-4xl">
+                          值得信赖的执行合作
+                        </h2>
+                        <p className="mt-5 text-base leading-8 text-white/78 sm:text-lg">
+                          <span className="font-bold text-white">Sana 古兰经频道</span>
+                          项目由
+                          <span className="font-bold" style={{ color: ACCENT }}>
+                            沙特-约旦卫星广播公司（Jasco）
+                          </span>
+                          在约旦安曼负责执行，拥有媒体制作与播出的丰富经验。
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="rounded-[1.8rem] border border-white/10 bg-[#08131b]/72 p-4 sm:p-6">
-                    <div className="flex h-full flex-col justify-center rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5">
-                      <div className="text-sm text-white/60">官方网站</div>
-                      <div className="mt-2 text-xl font-bold sm:text-2xl">Jasco Media City</div>
-                      <a
-                        href="https://jascomediacity.net/"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-5 inline-flex w-fit items-center gap-2 rounded-2xl border border-[#8BC6C0]/20 bg-[#7FB7AD]/10 px-5 py-3 text-sm text-[#DCE8E2] transition hover:bg-[#7FB7AD]/20 sm:text-base"
-                      >
-                        访问 Jasco 官网
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
+                  <div className={`${softCard} p-[1px]`}>
+                    <div className="h-full rounded-[1.8rem] border border-white/10 bg-[rgba(9,29,40,0.28)] p-4 sm:p-6">
+                      <div className={`flex h-full flex-col justify-center rounded-2xl border border-white/10 ${SOFT_INNER_GRADIENT} p-4 sm:p-5`}>
+                        <div className="text-sm text-white/60">官方网站</div>
+                        <div className="mt-2 text-xl font-bold sm:text-2xl">Jasco Media City</div>
+                        <a
+                          href="https://jascomediacity.net/"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-5 inline-flex w-fit items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.06] px-5 py-3 text-sm text-white/90 transition hover:bg-white/[0.10] sm:text-base"
+                        >
+                          访问 Jasco 官网
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1386,7 +1382,7 @@ export default function QuranTranslationLandingPage() {
               <h2 className="mt-5 text-2xl font-black sm:text-4xl lg:text-5xl">
                 Sana —— 传向众世界的信息
               </h2>
-              <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-white/70 sm:text-lg">
+              <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-white/72 sm:text-lg">
                 一个运用现代技术传播古兰经意义的平台，将教法根基与先进媒介优雅结合。
               </p>
             </motion.div>
@@ -1447,7 +1443,7 @@ export default function QuranTranslationLandingPage() {
             >
               {sectionBadge(Crown, "我们的作品")}
               <h2 className="mt-5 text-2xl font-black sm:text-4xl lg:text-5xl">作品示例</h2>
-              <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-white/70 sm:text-lg">
+              <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-white/72 sm:text-lg">
                 芬芳的古兰经诵读与多语言经义翻译展示 —— Sana，传向众世界的信息。
               </p>
             </motion.div>
@@ -1480,7 +1476,7 @@ export default function QuranTranslationLandingPage() {
               <h2 className="mt-5 text-2xl font-black sm:text-4xl lg:text-5xl">
                 项目影响力与全球传播
               </h2>
-              <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-white/70 sm:text-lg">
+              <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-white/72 sm:text-lg">
                 这是一项全球性的古兰经传播事业，提供可信翻译、动人体验，并将古兰经的意义带入世界各地家庭。
               </p>
             </motion.div>
@@ -1512,7 +1508,7 @@ export default function QuranTranslationLandingPage() {
             >
               {sectionBadge(Users, "成功伙伴")}
               <h2 className="mt-5 text-2xl font-black sm:text-4xl lg:text-5xl">合作成就卓越</h2>
-              <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-white/70 sm:text-lg">
+              <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-white/72 sm:text-lg">
                 项目的成功来自一批优秀合作方，包括教法机构、媒体团队、制作方以及志愿者。
               </p>
             </motion.div>
@@ -1543,31 +1539,29 @@ export default function QuranTranslationLandingPage() {
             >
               <div className="text-center">
                 <div
-                  className="inline-flex max-w-full items-center gap-3 rounded-full border border-white/10 bg-white/10 px-5 py-3 text-base font-semibold backdrop-blur-md shadow-[0_6px_16px_rgba(0,0,0,0.12)] sm:px-7 sm:py-4 sm:text-lg"
+                  className="inline-flex max-w-full items-center gap-3 rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-base font-semibold backdrop-blur-md shadow-[0_6px_16px_rgba(0,0,0,0.12)] sm:px-7 sm:py-4 sm:text-lg"
                   style={{ color: ACCENT }}
                 >
                   <Sparkles className="h-5 w-5 shrink-0" style={{ color: ACCENT }} />
                   <span>联系我们</span>
                 </div>
 
-                <p className="mx-auto mt-5 max-w-4xl text-base leading-8 text-white/75 sm:text-lg">
+                <p className="mx-auto mt-5 max-w-4xl text-base leading-8 text-white/76 sm:text-lg">
                   Sana 是一项面向世界的宣教信息工程。我们乐于随时接收您的咨询、建议与合作意向，并以清晰直接的方式与您沟通。
                 </p>
               </div>
 
-              <div
-                className={`mt-8 rounded-[2rem] p-4 sm:p-6 md:p-8 ${gradientOuterCard}`}
-              >
-                <div className="rounded-[2rem] border border-white/10 bg-[#08131b]/72 p-4 sm:p-6">
-                  <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4 sm:p-5">
+              <div className={`mt-8 rounded-[2.2rem] p-4 sm:p-6 md:p-8 ${outerFrame}`}>
+                <div className="rounded-[2rem] border border-white/10 bg-[rgba(9,29,40,0.28)] p-4 sm:p-6">
+                  <div className={`rounded-[1.6rem] border border-white/10 ${SOFT_INNER_GRADIENT} p-4 sm:p-5`}>
                     <div className="mb-4 text-xl font-bold sm:text-2xl">联系团队</div>
-                    <div className="space-y-3 text-white/75">
-                      <div className="rounded-2xl bg-white/5 px-4 py-3 text-sm sm:text-base">
+                    <div className="space-y-3 text-white/76">
+                      <div className="rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 text-sm sm:text-base">
                         我们的团队将很高兴为您提供帮助，并尽快回复您。
                       </div>
                       <a
                         href="mailto:snachannel159@gmail.com"
-                        className="flex items-center justify-center gap-3 rounded-2xl border border-[#8BC6C0]/20 bg-[#7FB7AD]/10 px-4 py-3 text-center text-sm font-semibold text-[#DCE8E2] transition hover:bg-[#7FB7AD]/20 sm:text-base"
+                        className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/[0.10] sm:text-base"
                       >
                         <Mail className="h-4 w-4" style={{ color: ACCENT }} />
                         发送邮件
@@ -1580,138 +1574,142 @@ export default function QuranTranslationLandingPage() {
           </section>
 
           <footer className="pb-8 pt-4 sm:pb-10">
-            <div className={`rounded-[2rem] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 ${glass}`}>
+            <div className={`rounded-[2.2rem] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 ${outerFrame}`}>
               <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr_1fr]">
-                <div
-                  className={`rounded-[1.8rem] border border-white/10 p-4 text-center sm:p-6 ${INNER_GRADIENT} flex h-full flex-col items-center justify-center`}
-                >
-                  <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-white/10 shadow-[0_0_18px_rgba(255,255,255,0.06)] backdrop-blur-md sm:h-24 sm:w-24">
-                    <img
-                      src={sanaLogo}
-                      alt="Sana 标志"
-                      className="h-14 w-14 object-contain sm:h-16 sm:w-16"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
-
-                  <div className="mt-4">
-                    <span className="inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs text-white/90 sm:px-5 sm:text-sm">
-                      Sana 古兰经频道
-                    </span>
-                  </div>
-
-                  <div className="mt-4 text-2xl font-black sm:text-3xl" style={{ color: ACCENT }}>
-                    Sana —— 传向众世界的信息
-                  </div>
-
-                  <p className="mx-auto mt-4 max-w-[30rem] rounded-[1.4rem] border border-white/10 bg-[rgba(19,51,64,0.58)] px-4 py-4 text-sm leading-7 text-white/78 sm:px-5 sm:text-base sm:leading-8">
-                    面向全球语言的古兰经意义翻译音视频频道，是一项兼具美学呈现、精准释义与使命精神的公益工程。
-                  </p>
-                </div>
-
-                <div className="rounded-[1.6rem] border border-white/10 bg-white/5 p-4 sm:p-5 flex flex-col items-center justify-center text-center">
-                  <div className="mb-5 flex flex-col items-center justify-center gap-4 text-lg font-bold text-white sm:text-xl">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-[0_8px_18px_rgba(0,0,0,0.14)]">
-                      <MessageCircle className="h-6 w-6" style={{ color: ACCENT }} />
+                <div className={`${softCard} p-[1px]`}>
+                  <div className="flex h-full flex-col items-center justify-center rounded-[1.9rem] border border-white/10 bg-[rgba(9,29,40,0.28)] p-4 text-center sm:p-6">
+                    <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-white/10 shadow-[0_0_18px_rgba(255,255,255,0.06)] backdrop-blur-md sm:h-24 sm:w-24">
+                      <img
+                        src={sanaLogo}
+                        alt="Sana 标志"
+                        className="h-14 w-14 object-contain sm:h-16 sm:w-16"
+                        loading="lazy"
+                        decoding="async"
+                      />
                     </div>
-                    <span>联系我们的信息</span>
-                  </div>
 
-                  <div className="w-full space-y-4 text-white/72">
-                    <a
-                      href="mailto:snachannel159@gmail.com"
-                      className="flex items-center justify-center gap-3 break-all rounded-2xl border border-white/10 bg-[#08131b]/55 px-4 py-3 text-sm transition hover:bg-white/10 sm:text-base"
-                    >
-                      <Mail className="h-4 w-4 shrink-0" style={{ color: ACCENT }} />
-                      snachannel159@gmail.com
-                    </a>
-
-                    <div className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-[#08131b]/55 px-4 py-3 text-sm sm:text-base">
-                      <MapPin className="h-4 w-4 shrink-0" style={{ color: ACCENT }} />
-                      安曼 · 约旦
+                    <div className="mt-4">
+                      <span className="inline-flex rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs text-white/90 sm:px-5 sm:text-sm">
+                        Sana 古兰经频道
+                      </span>
                     </div>
-                  </div>
 
-                  <div className="mt-6 w-full rounded-[1.4rem] border border-white/10 bg-[#08131b]/48 p-4">
-                    <a
-                      href="https://www.facebook.com/share/1FVbmggbzc/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-semibold text-white transition hover:scale-[1.01] hover:bg-white/10"
-                    >
-                      <Globe className="h-4 w-4" style={{ color: ACCENT }} />
-                      在 Facebook 关注我们
-                    </a>
+                    <div className="mt-4 text-2xl font-black sm:text-3xl" style={{ color: ACCENT }}>
+                      Sana —— 传向众世界的信息
+                    </div>
 
-                    <p className="mt-4 text-center text-sm leading-6 text-white/70">
-                      现在开启你的古兰经之旅
+                    <p className="mx-auto mt-4 max-w-[30rem] rounded-[1.4rem] border border-white/10 bg-[rgba(7,23,34,0.34)] px-4 py-4 text-sm leading-7 text-white/78 sm:px-5 sm:text-base sm:leading-8">
+                      面向全球语言的古兰经意义翻译音视频频道，是一项兼具美学呈现、精准释义与使命精神的公益工程。
                     </p>
                   </div>
                 </div>
 
-                <div className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(145deg,rgba(255,255,255,0.08),rgba(255,255,255,0.04))] p-4 backdrop-blur-md sm:p-5 flex flex-col items-center justify-center text-center">
-                  <div className="mb-5 flex flex-col items-center justify-center gap-4 text-lg font-bold text-white sm:text-xl">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-[0_8px_18px_rgba(0,0,0,0.14)]">
-                      <Link2 className="h-6 w-6" style={{ color: ACCENT }} />
+                <div className={`${softCard} p-[1px]`}>
+                  <div className="flex h-full flex-col items-center justify-center rounded-[1.8rem] border border-white/10 bg-[rgba(9,29,40,0.28)] p-4 text-center sm:p-5">
+                    <div className="mb-5 flex flex-col items-center justify-center gap-4 text-lg font-bold text-white sm:text-xl">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] shadow-[0_8px_18px_rgba(0,0,0,0.14)]">
+                        <MessageCircle className="h-6 w-6" style={{ color: ACCENT }} />
+                      </div>
+                      <span>联系我们的信息</span>
                     </div>
-                    <span>应用下载链接</span>
+
+                    <div className="w-full space-y-4 text-white/72">
+                      <a
+                        href="mailto:snachannel159@gmail.com"
+                        className="flex items-center justify-center gap-3 break-all rounded-2xl border border-white/10 bg-[rgba(7,23,34,0.34)] px-4 py-3 text-sm transition hover:bg-white/[0.08] sm:text-base"
+                      >
+                        <Mail className="h-4 w-4 shrink-0" style={{ color: ACCENT }} />
+                        snachannel159@gmail.com
+                      </a>
+
+                      <div className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-[rgba(7,23,34,0.34)] px-4 py-3 text-sm sm:text-base">
+                        <MapPin className="h-4 w-4 shrink-0" style={{ color: ACCENT }} />
+                        安曼 · 约旦
+                      </div>
+                    </div>
+
+                    <div className="mt-6 w-full rounded-[1.4rem] border border-white/10 bg-[rgba(7,23,34,0.34)] p-4">
+                      <a
+                        href="https://www.facebook.com/share/1FVbmggbzc/"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.05] py-3 text-sm font-semibold text-white transition hover:scale-[1.01] hover:bg-white/[0.10]"
+                      >
+                        <Globe className="h-4 w-4" style={{ color: ACCENT }} />
+                        在 Facebook 关注我们
+                      </a>
+
+                      <p className="mt-4 text-center text-sm leading-6 text-white/70">
+                        现在开启你的古兰经之旅
+                      </p>
+                    </div>
                   </div>
+                </div>
 
-                  <div className="w-full rounded-[1.4rem] border border-white/10 bg-[#08131b]/48 p-4">
-                    <p className="mb-4 text-sm leading-7 text-white/65">
-                      下载应用，通过官方平台更轻松地跟进古兰经内容。
-                    </p>
-
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <a
-                        href="https://play.google.com/store/apps/details?id=com.sana_all&pcampaignid=web_share"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="group rounded-[1.3rem] border border-white/10 bg-white/5 p-4 transition hover:-translate-y-0.5 hover:bg-white/10"
-                      >
-                        <div className="flex items-center justify-center gap-3">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-[#7FB7AD]/10 text-white">
-                            <GooglePlayIcon />
-                          </div>
-                          <span className="whitespace-nowrap text-sm font-bold text-white sm:text-base">
-                            Google Play
-                          </span>
-                        </div>
-                      </a>
-
-                      <a
-                        href="https://apps.apple.com/us/app/sana-tv-%D8%B3%D9%86%D8%A7/id6742054715"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="group rounded-[1.3rem] border border-white/10 bg-white/5 p-4 transition hover:-translate-y-0.5 hover:bg-white/10"
-                      >
-                        <div className="flex items-center justify-center gap-3">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-[#D8B36A]/10 text-white">
-                            <AppStoreIcon />
-                          </div>
-                          <span className="text-sm font-bold text-white sm:text-base">
-                            App Store
-                          </span>
-                        </div>
-                      </a>
+                <div className={`${softCard} p-[1px]`}>
+                  <div className="flex h-full flex-col items-center justify-center rounded-[1.9rem] border border-white/10 bg-[rgba(9,29,40,0.28)] p-4 text-center backdrop-blur-md sm:p-5">
+                    <div className="mb-5 flex flex-col items-center justify-center gap-4 text-lg font-bold text-white sm:text-xl">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] shadow-[0_8px_18px_rgba(0,0,0,0.14)]">
+                        <Link2 className="h-6 w-6" style={{ color: ACCENT }} />
+                      </div>
+                      <span>应用下载链接</span>
                     </div>
 
-                    <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-[#0b1a23]/62 p-4">
-                      <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-white/65">
-                        <span>⭐ 4.9 评分</span>
-                        <span>🌍 100+ 国家</span>
+                    <div className="w-full rounded-[1.4rem] border border-white/10 bg-[rgba(7,23,34,0.34)] p-4">
+                      <p className="mb-4 text-sm leading-7 text-white/65">
+                        下载应用，通过官方平台更轻松地跟进古兰经内容。
+                      </p>
+
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <a
+                          href="https://play.google.com/store/apps/details?id=com.sana_all&pcampaignid=web_share"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="group rounded-[1.3rem] border border-white/10 bg-white/[0.05] p-4 transition hover:-translate-y-0.5 hover:bg-white/[0.10]"
+                        >
+                          <div className="flex items-center justify-center gap-3">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white">
+                              <GooglePlayIcon />
+                            </div>
+                            <span className="whitespace-nowrap text-sm font-bold text-white sm:text-base">
+                              Google Play
+                            </span>
+                          </div>
+                        </a>
+
+                        <a
+                          href="https://apps.apple.com/us/app/sana-tv-%D8%B3%D9%86%D8%A7/id6742054715"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="group rounded-[1.3rem] border border-white/10 bg-white/[0.05] p-4 transition hover:-translate-y-0.5 hover:bg-white/[0.10]"
+                        >
+                          <div className="flex items-center justify-center gap-3">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-white">
+                              <AppStoreIcon />
+                            </div>
+                            <span className="text-sm font-bold text-white sm:text-base">
+                              App Store
+                            </span>
+                          </div>
+                        </a>
                       </div>
 
-                      <a
-                        href="https://www.youtube.com/@SAN-AR-m5i"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-[#8BC6C0]/20 bg-[#7FB7AD]/10 py-3 text-sm font-bold text-[#DCE8E2] transition hover:scale-[1.01] hover:bg-[#7FB7AD]/20"
-                      >
-                        <Sparkles className="h-4 w-4" />
-                        立即开始
-                      </a>
+                      <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-white/[0.05] p-4">
+                        <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-white/65">
+                          <span>⭐ 4.9 评分</span>
+                          <span>🌍 100+ 国家</span>
+                        </div>
+
+                        <a
+                          href="https://www.youtube.com/@SAN-AR-m5i"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] py-3 text-sm font-bold text-white transition hover:scale-[1.01] hover:bg-white/[0.10]"
+                        >
+                          <Sparkles className="h-4 w-4" style={{ color: ACCENT }} />
+                          立即开始
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
